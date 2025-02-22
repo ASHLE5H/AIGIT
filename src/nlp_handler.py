@@ -1,5 +1,4 @@
 import requests
-import os
 import json
 import re
 from src.error_handler import log_error
@@ -7,12 +6,19 @@ from src.config import GEMINI_API_KEY, GEMINI_API_URL, API_TIMEOUT
 
 def interpret_command(user_input):
     """
-    Sends a natural language prompt to Gemini API and extracts only the Git command.
+    Sends a natural language prompt to Gemini API and extracts Git commands correctly.
     """
     headers = {"Content-Type": "application/json"}
-    payload = {
-        "contents": [{"parts": [{"text": f"Convert this into a single Git command without explanation: {user_input}"}]}]
-    }
+
+    # 🔹 Check if the user input suggests multiple actions
+    if any(keyword in user_input.lower() for keyword in ["and", ",", "then", "also"]):
+        prompt = (f"Convert this into one or more Git commands without explanation. "
+                  f"Only return the exact Git commands, separated by '&&' if needed: {user_input}")
+    else:
+        prompt = (f"Convert this into a single Git command without explanation. "
+                  f"DO NOT combine multiple commands using '&&' or ';'. Only return the exact Git command: {user_input}")
+
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
     url = f"{GEMINI_API_URL}?key={GEMINI_API_KEY}"
 
     try:
@@ -20,18 +26,14 @@ def interpret_command(user_input):
         response.raise_for_status()
         result = response.json()
 
-        # 🔍 Debugging: Print the full API response
-        # print("\n🔍 API Raw Response:", json.dumps(result, indent=2))
+        # Debugging: Print API response
+        print("\n🔍 API Raw Response:", json.dumps(result, indent=2))
 
         if "candidates" in result and result["candidates"]:
             full_response = result["candidates"][0]["content"]["parts"][0]["text"].strip()
 
-            # ✅ Remove backticks (if present)
-            full_response = full_response.strip("`")
-
-            # ✅ Extract command from Markdown code blocks
-            match = re.search(r"```(?:bash)?\n(.*?)\n```", full_response, re.DOTALL)
-            git_command = match.group(1).strip() if match else full_response
+            # ✅ Remove Markdown formatting if present
+            git_command = re.sub(r"```(?:bash)?\n(.*?)\n```", r"\1", full_response, flags=re.DOTALL).strip()
 
             # ✅ Ensure the extracted text starts with "git"
             if git_command.startswith("git"):
