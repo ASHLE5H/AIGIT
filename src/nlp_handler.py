@@ -12,12 +12,26 @@ def interpret_command(user_input):
     headers = {"Content-Type": "application/json"}
 
     # 🔹 Check if the user input suggests multiple actions
+    # ✅ Detect if multiple commands are intended
     if any(keyword in user_input.lower() for keyword in ["and", ",", "then", "also"]):
-        prompt = (f"Convert this into one or more Git commands without explanation. "
-                  f"Only return the exact Git commands, separated by '&&' if needed: {user_input}")
+        prompt = (f"""
+Convert this into one or more Git commands without explanation. 
+If multiple actions are mentioned, return them as separate Git commands joined by '&&'.
+For example:
+- "stage and commit" → "git add . && git commit -m 'update'"
+- "add, commit, and push" → "git add . && git commit -m 'message' && git push"
+- "create a branch then switch to it" → "git branch new-branch && git checkout new-branch"
+Only return the exact Git commands, with no markdown formatting: {user_input}
+""")
     else:
-        prompt = (f"Convert this into a single Git command without explanation. "
-                  f"DO NOT combine multiple commands using '&&' or ';'. Only return the exact Git command: {user_input}")
+        prompt = (f"""
+Convert this into a single Git command without explanation.
+DO NOT combine multiple commands using '&&' or ';'.
+For example:
+- "stage all files" → "git add ."
+- "push this branch to my GitHub repo" → "git push origin $(git branch --show-current)"
+Only return the exact Git command: {user_input}
+""")
 
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
     url = f"{GEMINI_API_URL}?key={GEMINI_API_KEY}"
