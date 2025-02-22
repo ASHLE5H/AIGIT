@@ -4,6 +4,7 @@ import re
 from src.error_handler import log_error
 from src.config import GEMINI_API_KEY, GEMINI_API_URL, API_TIMEOUT
 
+# 
 def interpret_command(user_input):
     """
     Sends a natural language prompt to Gemini API and extracts Git commands correctly.
