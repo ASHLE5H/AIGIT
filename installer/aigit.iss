@@ -9,6 +9,10 @@ OutputBaseFilename=AIGIT_Installer
 SetupIconFile=installer\icon.ico
 Compression=lzma
 SolidCompression=yes
+ArchitecturesInstallIn64BitMode=x64
+PrivilegesRequired=admin
+SilentInstall=yes
+WizardStyle=modern
 
 [Files]
 Source: "dist\aigit.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -20,9 +24,18 @@ Source: "docs\*"; DestDir: "{app}\docs"; Flags: recursesubdirs
 [Icons]
 Name: "{group}\AIGIT"; Filename: "{app}\aigit.exe"
 Name: "{group}\Uninstall AIGIT"; Filename: "{uninstallexe}"
+Name: "{commondesktop}\AIGIT"; Filename: "{app}\aigit.exe"
+
+[Registry]
+; Add AIGIT to the system PATH so it can be accessed from anywhere
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Flags: preservestringtype
 
 [Run]
 Filename: "{app}\aigit.exe"; Description: "Run AIGIT"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
+
+[UninstallRun]
+; Remove AIGIT from system PATH on uninstall
+Filename: "cmd.exe"; Parameters: "/C setx Path ""{olddata}"""; Flags: runhidden
