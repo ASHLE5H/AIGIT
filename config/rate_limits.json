@@ -1,0 +1,13 @@
+{
+    "default": {
+        "requests_per_minute": 60
+    },
+    "users": {
+        "user_123": {
+            "requests_per_minute": 30
+        },
+        "user_456": {
+            "requests_per_minute": 50
+        }
+    }
+}

@@ -1,0 +1,15 @@
+init
+add
+commit
+push
+pull
+clone
+status
+log
+branch
+checkout
+merge
+fetch
+diff
+revert
+reset --soft

@@ -1,0 +1,27 @@
+# Ignore environment variables
+.env
+
+# Ignore compiled executables
+aigit.exe
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore logs
+error_logs/*.log
+
+# Ignore build artifacts
+/dist/
+/build/
+/installer/*.spec
+
+# Ignore virtual environments
+venv/
+.env/
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+.DS_Store
