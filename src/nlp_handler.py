@@ -42,7 +42,7 @@ Only return the exact Git command: {user_input}
         result = response.json()
 
         # Debugging: Print API response
-        print("\n🔍 API Raw Response:", json.dumps(result, indent=2))
+        # print("\n🔍 API Raw Response:", json.dumps(result, indent=2))
 
         if "candidates" in result and result["candidates"]:
             full_response = result["candidates"][0]["content"]["parts"][0]["text"].strip()
